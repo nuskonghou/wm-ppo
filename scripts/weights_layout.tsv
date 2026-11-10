@@ -1,0 +1,22 @@
+# destination (under the staging directory)    source directory (relative to the repository)
+alfworld/warmup                                 alfworld/runs/ppo                         warmup-meta
+alfworld/warmup/it012/adapter                   alfworld/runs/ppo/it012/adapter
+alfworld/warmup/it012/critic                    alfworld/runs/ppo/it012/critic
+alfworld/initial_wm                             alfworld/runs/wm/warmup_log
+alfworld/wmppo_run1_it036/policy                alfworld/runs/wmppo_run1/it036/adapter
+alfworld/wmppo_run1_it036/critic                alfworld/runs/wmppo_run1/it036/critic
+alfworld/wmppo_run1_it036/world_model           alfworld/runs/wmppo_run1/it036/wm
+scienceworld/warmup                             scienceworld/runs/ppo                     warmup-meta
+scienceworld/warmup/it012/adapter               scienceworld/runs/ppo/it012/adapter
+scienceworld/warmup/it012/critic                scienceworld/runs/ppo/it012/critic
+scienceworld/initial_wm                         scienceworld/runs/wm/warmup_log
+scienceworld/wmppo_run1_it060/policy            scienceworld/runs/wmppo_run1/it060/adapter
+scienceworld/wmppo_run1_it060/critic            scienceworld/runs/wmppo_run1/it060/critic
+scienceworld/wmppo_run1_it060/world_model       scienceworld/runs/wmppo_run1/it060/wm
+sokoban/warmup                                  sokoban/runs/ppo                          warmup-meta
+sokoban/warmup/it012/adapter                    sokoban/runs/ppo/it012/adapter
+sokoban/warmup/it012/critic                     sokoban/runs/ppo/it012/critic
+sokoban/initial_wm                              sokoban/runs/wm/warmup_log
+sokoban/wmppo_run1_it036/policy                 sokoban/runs/wmppo_run1/it036/adapter
+sokoban/wmppo_run1_it036/critic                 sokoban/runs/wmppo_run1/it036/critic
+sokoban/wmppo_run1_it036/world_model            sokoban/runs/wmppo_run1/it036/wm

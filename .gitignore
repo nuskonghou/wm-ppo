@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+# large or machine-local directories (see README.md)
+/models/
+/data/
+/third_party/
+/weights/
+/figures/
+/*/runs/

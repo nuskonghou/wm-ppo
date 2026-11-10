@@ -1,0 +1,11 @@
+\begin{tabular}{l r c c r c c}
+\toprule
+ & \multicolumn{3}{c}{iteration 24} & \multicolumn{3}{c}{iteration 36} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Method & Steps & Greedy & pass@1 & Steps & Greedy & pass@1 \\
+\midrule
+\wmppo{} (ours) & 20k & 80.3 & 69.8 & 36k & 87.0 & 84.4 \\
+ProAct (MC-PPO) & 18k & 77.3 & 70.9 & 33k & 77.3\sigup{} & 68.1\sigup{} \\
+PPO-160 & 19k & 62.0\sigup{} & 53.4\sigup{} & 36k & 67.7\sigup{} & 63.2\sigup{} \\
+\bottomrule
+\end{tabular}

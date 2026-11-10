@@ -1,0 +1,31 @@
+\begin{tabular}{@{}l c c c c c@{}}
+\toprule
+ & & \multicolumn{2}{c}{ALFWorld, iteration 36} & \multicolumn{2}{c}{ScienceWorld, iteration 60} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Method & Runs & Greedy & pass@1 & Greedy & pass@1 \\
+\midrule
+\textbf{\wmppo{} (ours)} & 3 / 3 & 87.5\,{\scriptsize$\pm$0.9} & 87.8\,{\scriptsize$\pm$1.7} & \textbf{52.9\,{\scriptsize$\pm$2.3}} & \textbf{51.6\,{\scriptsize$\pm$4.8}} \\
+\wmppo{} (policy channel only) & 3 / 3 & \textbf{88.4\,{\scriptsize$\pm$2.3}} & \textbf{89.4\,{\scriptsize$\pm$1.6}} & 47.2\sigup{}\,{\scriptsize$\pm$2.8} & 47.2\sigup{}\,{\scriptsize$\pm$1.7} \\
+\midrule
+\multicolumn{6}{l}{\emph{Standard training and refinements}} \\
+PPO-160 & 3 / 3 & 63.5\sigup{}\,{\scriptsize$\pm$9.8} & 71.0\sigup{}\,{\scriptsize$\pm$6.0} & 39.3\sigup{}\,{\scriptsize$\pm$1.5} & 42.6\sigup{}\,{\scriptsize$\pm$2.5} \\
+PPO-256 & 3 / 3 & 83.1\sigup{}\,{\scriptsize$\pm$3.1} & 84.8\sigup{}\,{\scriptsize$\pm$1.2} & 43.8\sigup{}\,{\scriptsize$\pm$8.7} & 43.5\sigup{}\,{\scriptsize$\pm$6.6} \\
+GRPO & 1 / 1 & 59.5\rlap{\sigup{}} & 67.8\rlap{\sigup{}} & 35.2\rlap{\sigup{}} & 35.7\rlap{\sigup{}} \\
+GiGPO & 1 / 1 & 78.1\rlap{\sigup{}} & 81.0\rlap{\sigup{}} & 38.4\rlap{\sigup{}} & 36.3\rlap{\sigup{}} \\
+CAPO & 1 / 1 & 87.2 & 86.7 & 21.1\rlap{$^{b}$} & 20.0\rlap{$^{b}$} \\
+\sopo{}$^{a}$ & 1 / 1 & 86.5 & 83.1\rlap{\sigup{}} & 46.5\rlap{\sigup{}} & 49.4 \\
+\steppo{} & 1 / 1 & 85.8 & 85.0 & 25.0\rlap{\sigup{}} & 26.5\rlap{\sigup{}} \\
+\midrule
+\multicolumn{6}{l}{\emph{Structural controls (Section~\ref{sec:understanding})}} \\
+\qppo{} (learned $Q$ values) & 3 / 3 & 84.4\sigup{}\,{\scriptsize$\pm$9.0} & 88.6\,{\scriptsize$\pm$3.3} & 46.1\sigup{}\,{\scriptsize$\pm$5.2} & 46.2\sigup{}\,{\scriptsize$\pm$2.5} \\
+Wide-Tree-PPO (no aux.\ update) & 3 / 3 & 78.5\sigup{}\,{\scriptsize$\pm$9.4} & 82.3\sigup{}\,{\scriptsize$\pm$5.2} & 40.8\sigup{}\,{\scriptsize$\pm$3.9} & 40.0\sigup{}\,{\scriptsize$\pm$3.3} \\
+Fixed WM & 1 / 1 & 76.3\rlap{\sigup{}} & 79.4\rlap{\sigup{}} & 38.7\rlap{\sigup{}} & 39.0\rlap{\sigup{}} \\
+\midrule
+\multicolumn{6}{l}{\emph{Auxiliary feedback added to PPO-160}} \\
+PaW$^{a}$ & 1 / 1 & 85.4 & 87.3 & 35.6\rlap{\sigup{}} & 38.8\rlap{\sigup{}} \\
+Majority-vote labels & 1 / 1 & 17.2\rlap{\sigup{}} & 17.6\rlap{\sigup{}} & 25.0\rlap{\sigup{}} & 25.0\rlap{\sigup{}} \\
+OCSD (self teacher) & 3 / 1 & 83.0\sigup{}\,{\scriptsize$\pm$1.8} & 82.7\sigup{}\,{\scriptsize$\pm$3.1} & 34.2\rlap{\sigup{}} & 43.7\rlap{\sigup{}} \\
+OCSD (32B teacher) & 1 / 1 & 83.2 & 70.1\rlap{\sigup{}} & 43.0\rlap{\sigup{}} & 41.5\rlap{\sigup{}} \\
+OPD (32B teacher) & 1 / 1 & 41.2\rlap{\sigup{}} & 51.0\rlap{\sigup{}} & 36.3\rlap{\sigup{}} & 33.9\rlap{\sigup{}} \\
+\bottomrule
+\end{tabular}

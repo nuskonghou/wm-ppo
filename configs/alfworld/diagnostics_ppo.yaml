@@ -1,0 +1,17 @@
+# PPO continued from the warm-up to iteration 24 (the policy and critic of Section 2) -- alfworld
+# Paper: Section 2, Appendix C.
+# Iterations 13-24 of the warm-up run (same task order); the diagnostics use its iteration-24 policy and critic (docs/REPRODUCE.md).
+name: "PPO continued from the warm-up to iteration 24 (the policy and critic of Section 2)"
+arm: ppo
+iters: 24
+fork: warmup       # start from the shared warm-up checkpoint (iteration 12, same task order)
+runs:              # paper run (the k-th run of this method in the paper) -> --seed
+  1: 0
+args:              # alf_final.py arguments of the reported runs (all others keep their defaults)
+  scale: 0.5
+  eval-every: 3
+world_model: none
+layout:            # GPUs: one per inference server (two for the 32B teacher), plus the trainers
+  policy_servers: 1
+  trainer_gpus: 2
+workers: 48

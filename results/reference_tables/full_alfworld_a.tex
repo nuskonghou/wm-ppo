@@ -1,0 +1,30 @@
+\begin{tabular}{l r c c c r c c c }
+\toprule
+ & \multicolumn{4}{c}{iteration 24} & \multicolumn{4}{c}{iteration 36} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+Method & Steps & Greedy & pass@1 & pass@3 & Steps & Greedy & pass@1 & pass@3 \\
+\midrule
+\wmppo{} (ours) (3) & 60k & 55.7 & 60.8 & 73.5 & 102k & 87.5 & 87.8 & 93.4 \\
+\wmppo{} (policy channel only) (3) & 58k & 68.4\sigdn{} & 70.9\sigdn{} & 82.5 & 97k & 88.4 & 89.4 & 94.6 \\
+PPO-160 (3) & 57k & 47.1\sigup{} & 54.3\sigup{} & 67.9 & 105k & 63.5\sigup{} & 71.0\sigup{} & 81.1 \\
+PPO-256 (3) & 88k & 63.6\sigdn{} & 69.3\sigdn{} & 81.9 & 150k & 83.1\sigup{} & 84.8\sigup{} & 92.9 \\
+GRPO & 58k & 53.3 & 57.2\sigup{} & 73.0 & 113k & 59.5\sigup{} & 67.8\sigup{} & 83.6 \\
+GRPO, 40 tasks $\times$ 4 & 60k & 36.5\sigup{} & 42.6\sigup{} & 56.6 & 113k & 54.4\sigup{} & 60.0\sigup{} & 71.2 \\
+GiGPO & 60k & 44.9\sigup{} & 54.4\sigup{} & 65.7 & 109k & 78.1\sigup{} & 81.0\sigup{} & 90.9 \\
+HGPO & 56k & 52.6 & 59.4 & 68.2 & 103k & 65.0\sigup{} & 70.8\sigup{} & 81.0 \\
+Tree-GRPO & 66k & 43.4\sigup{} & 47.8\sigup{} & 69.0 & 124k & 48.9\sigup{} & 59.6\sigup{} & 74.8 \\
+CAPO & 54k & 78.5\sigdn{} & 80.5\sigdn{} & 87.6 & 88k & 87.2 & 86.7 & 92.0 \\
+\sopo{} & 55k & 74.8\sigdn{} & 74.0\sigdn{} & 89.8 & 100k & 86.5 & 83.1\sigup{} & 89.8 \\
+\steppo{} & 54k & 71.5\sigdn{} & 74.6\sigdn{} & 88.3 & 91k & 85.8 & 85.0 & 92.7 \\
+VAPO-lite & 56k & 65.0\sigdn{} & 66.8\sigdn{} & 80.7 & 100k & 68.2\sigup{} & 80.2\sigup{} & 90.9 \\
+\qppo{} (3) & 60k & 63.7\sigdn{} & 68.3\sigdn{} & 81.1 & 100k & 84.4\sigup{} & 88.6 & 94.3 \\
+Wide-Tree-PPO (3) & 61k & 54.0 & 63.3\sigdn{} & 76.5 & 106k & 78.5\sigup{} & 82.3\sigup{} & 90.6 \\
+Fixed WM & 59k & 67.2\sigdn{} & 67.4\sigdn{} & 77.0 & 99k & 76.3\sigup{} & 79.4\sigup{} & 87.2 \\
+PaW (coefficient 1.0) & 52k & 68.6\sigdn{} & 70.6\sigdn{} & 81.8 & 89k & 85.4 & 87.3 & 92.7 \\
+Majority-vote labels & 65k & 22.6\sigup{} & 24.1\sigup{} & 28.8 & 132k & 17.2\sigup{} & 17.6\sigup{} & 20.8 \\
+OCSD (self teacher) (3) & 54k & 60.6\sigdn{} & 64.0\sigdn{} & 81.0 & 96k & 83.0\sigup{} & 82.7\sigup{} & 93.6 \\
+OCSD (32B teacher) & 56k & 66.1\sigdn{} & 67.2\sigdn{} & 82.1 & 99k & 83.2 & 70.1\sigup{} & 88.7 \\
+OPD (32B teacher) & 58k & 43.4\sigup{} & 51.6\sigup{} & 64.6 & 112k & 41.2\sigup{} & 51.0\sigup{} & 64.2 \\
+\wmppo{}, second run of seed 2$^{s}$ & 59k & 55.8 & 61.1 & 74.8 & 102k & 85.8 & 86.7 & 92.0 \\
+\bottomrule
+\end{tabular}

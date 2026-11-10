@@ -1,0 +1,32 @@
+\begin{tabular}{l r c c c r c c c }
+\toprule
+ & \multicolumn{4}{c}{iteration 48} & \multicolumn{4}{c}{iteration 60} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+Method & Steps & Greedy & pass@1 & pass@3 & Steps & Greedy & pass@1 & pass@3 \\
+\midrule
+\wmppo{} (ours) (3) & 99k & 44.4 & 43.2 & 51.5 & 128k & 52.9 & 51.6 & 59.6 \\
+\wmppo{} (policy channel only) (3) & 99k & 41.1\sigup{} & 41.2\sigup{} & 50.1 & 130k & 47.2\sigup{} & 47.2\sigup{} & 56.0 \\
+\wmppo{}, terminal-only value target & 93k & 43.3 & 42.4 & 50.0 & 125k & 48.2\sigup{} & 49.3 & 59.9 \\
+PPO-160 (3) & 84k & 36.3\sigup{} & 37.1\sigup{} & 45.9 & 113k & 39.3\sigup{} & 42.6\sigup{} & 52.2 \\
+PPO-256 (3) & 114k & 38.7\sigup{} & 38.3\sigup{} & 47.4 & 156k & 43.8\sigup{} & 43.5\sigup{} & 51.9 \\
+GRPO & 79k & 31.0\sigup{} & 28.1\sigup{} & 38.4 & 103k & 35.2\sigup{} & 35.7\sigup{} & 43.3 \\
+GRPO, 40 tasks $\times$ 4 & 69k & 29.9\sigup{} & 29.1\sigup{} & 35.9 & 88k & 31.3\sigup{} & 31.5\sigup{} & 39.8 \\
+GiGPO & 79k & 28.9\sigup{} & 28.3\sigup{} & 35.9 & 105k & 38.4\sigup{} & 36.3\sigup{} & 43.7 \\
+GiGPO, 40 tasks $\times$ 4 & 78k & 29.6\sigup{} & 31.9\sigup{} & 39.1 & 100k & 34.2\sigup{} & 33.0\sigup{} & 41.2 \\
+\sopo{} (tuned clip) & 83k & 40.5 & 35.7\sigup{} & 48.6 & 111k & 46.5\sigup{} & 49.4 & 60.9 \\
+\sopo{} (original clip) & 128k & 16.9\sigup{} & 16.4\sigup{} & 17.6 & 164k & 15.8\sigup{} & 16.2\sigup{} & 16.9 \\
+\steppo{} & 104k & 25.4\sigup{} & 23.8\sigup{} & 29.9 & 138k & 25.0\sigup{} & 26.5\sigup{} & 38.4 \\
+\qppo{} (3) & 99k & 40.6\sigup{} & 38.9\sigup{} & 46.7 & 133k & 46.1\sigup{} & 46.2\sigup{} & 54.8 \\
+Wide-Tree-PPO (3) & 95k & 36.0\sigup{} & 35.8\sigup{} & 43.2 & 125k & 40.8\sigup{} & 40.0\sigup{} & 47.8 \\
+Fixed WM & 82k & 35.2\sigup{} & 34.9\sigup{} & 40.1 & 108k & 38.7\sigup{} & 39.0\sigup{} & 47.5 \\
+PaW (coefficient 0.5) & 80k & 29.2\sigup{} & 28.9\sigup{} & 38.7 & 109k & 35.6\sigup{} & 38.8\sigup{} & 48.9 \\
+PaW (coefficient 1.0) & 97k & 6.0\sigup{} & 29.3\sigup{} & 39.1 & 131k & 6.0\sigup{} & 30.8\sigup{} & 37.0 \\
+PaW (coefficient 0.25) & 65k & 29.2\sigup{} & 29.5\sigup{} & 37.7 & 87k & 32.4\sigup{} & 32.9\sigup{} & 39.4 \\
+Majority-vote labels & 94k & 24.6\sigup{} & 24.6\sigup{} & 29.6 & 135k & 25.0\sigup{} & 25.0\sigup{} & 27.8 \\
+OCSD (self teacher) & 81k & 33.5\sigup{} & 36.6\sigup{} & 43.0 & 112k & 34.2\sigup{} & 43.7\sigup{} & 53.2 \\
+OCSD (32B teacher) & 70k & 33.8\sigup{} & 32.7\sigup{} & 41.9 & 90k & 43.0\sigup{} & 41.5\sigup{} & 49.6 \\
+OPD (32B teacher) & 80k & 28.2\sigup{} & 31.3\sigup{} & 44.4 & 106k & 36.3\sigup{} & 33.9\sigup{} & 46.8 \\
+PPO-256, second run of seed 1$^{s}$ & 116k & 39.4 & 39.4 & 45.4 & 160k & 40.8 & 44.6 & 55.3 \\
+\wmppo{} (policy channel only), second run of seed 3$^{s}$ & 95k & 43.7 & 43.5 & 50.7 & 122k & 44.4 & 45.7 & 53.2 \\
+\bottomrule
+\end{tabular}

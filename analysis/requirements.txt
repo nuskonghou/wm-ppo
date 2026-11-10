@@ -1,0 +1,3 @@
+# host-side packages: analysis/figures.py (matplotlib) and tests/ (PyYAML); check_tables.py and diagnostics.py need none
+matplotlib==3.10.9
+PyYAML==6.0.3

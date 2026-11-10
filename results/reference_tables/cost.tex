@@ -1,0 +1,17 @@
+\begin{tabular}{l l r r r r r}
+\toprule
+Environment & Method & Real steps & Policy samples & WM generations & Wall (min) & GPU$\cdot$h \\
+\midrule
+ALFWorld & \wmppo{} & 4,232 & 8,914 & 1,930 & 40 & 4.6 \\
+ & PPO-160 & 4,381 & 4,381 & 0 & 32 & 1.7 \\
+ & PPO-256 & 6,252 & 6,252 & 0 & 28 & 2.3 \\
+ & Wide-Tree-PPO & 4,399 & 4,399 & 0 & 31 & 1.5 \\
+ & \qppo{} & 4,152 & 8,795 & -- & 46 & 2.7 \\
+\midrule
+ScienceWorld & \wmppo{} & 2,674 & 5,205 & 1,483 & 55 & 6.4 \\
+ & PPO-160 & 2,361 & 2,361 & 0 & 34 & 1.7 \\
+ & PPO-256 & 3,258 & 3,258 & 0 & 32 & 2.4 \\
+ & Wide-Tree-PPO & 2,607 & 2,607 & 0 & 37 & 1.9 \\
+ & \qppo{} & 2,767 & 5,443 & -- & 70 & 3.5 \\
+\bottomrule
+\end{tabular}

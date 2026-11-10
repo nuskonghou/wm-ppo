@@ -1,0 +1,17 @@
+# Tree-GRPO on WM-PPO's trees (64 x 4 leaves) -- alfworld
+# Paper: Tables 7, 10.
+name: "Tree-GRPO on WM-PPO's trees (64 x 4 leaves)"
+arm: treegrpo
+iters: 36
+fork: warmup       # start from the shared warm-up checkpoint (iteration 12, same task order)
+runs:              # paper run (the k-th run of this method in the paper) -> --seed
+  1: 0
+args:              # alf_final.py arguments of the reported runs (all others keep their defaults)
+  scale: 0.5
+  eval-every: 3
+world_model: none
+layout:            # GPUs: one per inference server (two for the 32B teacher), plus the trainers
+  policy_servers: 1
+  trainer_gpus: 2
+workers: 48
+evaluate: [24, 36]   # iterations evaluated in the paper

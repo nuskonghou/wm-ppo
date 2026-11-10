@@ -1,0 +1,17 @@
+# PaW (published coefficient 1.0) -- alfworld
+# Paper: Table 2; Tables 10-11.
+name: "PaW (published coefficient 1.0)"
+arm: ppo160paw
+iters: 55
+fork: warmup       # start from the shared warm-up checkpoint (iteration 12, same task order)
+runs:              # paper run (the k-th run of this method in the paper) -> --seed
+  1: 0
+args:              # alf_final.py arguments of the reported runs (all others keep their defaults)
+  scale: 0.5
+  eval-every: 3
+world_model: none
+layout:            # GPUs: one per inference server (two for the 32B teacher), plus the trainers
+  policy_servers: 1
+  trainer_gpus: 2
+workers: 48
+evaluate: [24, 36, 55]   # iterations evaluated in the paper

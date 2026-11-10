@@ -1,0 +1,32 @@
+# WM-PPO -- sokoban
+# Paper: Table 18 (Appendix E.6).
+name: "WM-PPO"
+arm: wmppo
+iters: 36
+fork: warmup       # start from the shared warm-up checkpoint (iteration 12, same task order)
+runs:              # paper run (the k-th run of this method in the paper) -> --seed
+  1: 0
+args:              # alf_final.py arguments of the reported runs (all others keep their defaults)
+  scale: 0.5
+  eval-every: 3
+  sib-weight: 1
+  k-alt: 8
+  distill-nu: 1
+  calib-min: 20
+  calib-window: 4
+  calib-lcb-until: 14
+  wm-online: true
+  wm-lr: 5.0e-5
+  critic-cons-weight: 0.5
+  critic-cons-mode: full
+  max-new-tokens: 1024
+  max-steps: 15
+world_model: online  # starts from the initial world model, updated every iteration
+layout:            # GPUs: one per inference server (two for the 32B teacher), plus the trainers
+  policy_servers: 2
+  wm_servers: 2
+  trainer_gpus: 2
+  wm_trainer_gpus: 2
+workers: 64
+sglang_extra: "--cuda-graph-max-bs=96"
+evaluate: [24, 36]   # iterations evaluated in the paper

@@ -1,0 +1,21 @@
+# PPO-256 -- scienceworld
+# Paper: Table 2; Tables 12-13.
+name: "PPO-256"
+arm: ppo256
+iters: 60
+fork: warmup       # start from the shared warm-up checkpoint (iteration 12, same task order)
+runs:              # paper run (the k-th run of this method in the paper) -> --seed
+  1: 0
+  2: 1
+  3: 2
+args:              # alf_final.py arguments of the reported runs (all others keep their defaults)
+  scale: 0.5
+  eval-every: 3
+world_model: none
+layout:            # GPUs: one per inference server (two for the 32B teacher), plus the trainers
+  policy_servers: 1
+  trainer_gpus: 4
+run_trainer_gpus:  # trainer GPUs of these paper runs (data-parallel ranks of the policy/critic update)
+  1: 3
+workers: 48
+evaluate: [24, 36, 48, 60]   # iterations evaluated in the paper

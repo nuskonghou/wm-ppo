@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Run scripts/launch.py inside the environment image (docker/Dockerfile.env). The host needs only Docker with the
+# NVIDIA container toolkit; the launcher starts the inference servers and the trainers as sibling containers of the
+# trainer image through the Docker socket, so all directories are mounted at the same absolute paths.
+#   scripts/wmppo train alfworld wmppo --run 1
+#   scripts/wmppo eval alfworld weights/alfworld/wmppo_run1_it036/policy wmppo_run1_it036
+# Environment variables (see wmppo/paths.py): WMPPO_MODEL, ALFWORLD_DATA, WMPPO_TEACHER_MODEL, WMPPO_TMP, WMPPO_GPUS,
+# WMPPO_MOUNTS (extra host directories, colon-separated), WMPPO_ENV_IMAGE (default wmppo-env), WMPPO_TRAINER_IMAGE.
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+IMG="${WMPPO_ENV_IMAGE:-wmppo-env}"
+mounts=(-v "$ROOT:$ROOT")
+add() { [ -n "${1:-}" ] && [ -e "$1" ] && mounts+=(-v "$(realpath "$1"):$(realpath "$1")") || true; }
+[ -n "${WMPPO_MODEL:-}" ] && add "$(dirname "$WMPPO_MODEL")"
+add "${ALFWORLD_DATA:-}"; add "${WMPPO_TEACHER_MODEL:-}"; add "${WMPPO_TMP:-}"; add "${PAW_REPO:-}"
+IFS=':' read -ra extra <<< "${WMPPO_MOUNTS:-}"; for d in "${extra[@]}"; do add "$d"; done
+# Create the run directories as the calling user first; the containers run as root and would otherwise create them
+# root-owned, which blocks later host-side steps (e.g. copying a warm-up checkpoint into runs/).
+for e in alfworld scienceworld sokoban; do mkdir -p "$ROOT/$e/runs/wm" "$ROOT/$e/runs/final_eval"; done
+envs=()
+for v in $(compgen -e); do case "$v" in WMPPO_*|ALFWORLD_DATA|PAW_REPO) envs+=(-e "$v");; esac; done
+tty=(); [ -t 0 ] && tty=(-it)
+exec docker run --rm "${tty[@]}" --net=host --ipc=host -v /var/run/docker.sock:/var/run/docker.sock \
+  "${mounts[@]}" "${envs[@]}" -w "$ROOT" "$IMG" /opt/venv-alfworld/bin/python scripts/launch.py "$@"

@@ -1,0 +1,16 @@
+\begin{tabular}{l r c c c }
+\toprule
+ & \multicolumn{4}{c}{iteration 55} \\
+\cmidrule(lr){2-5}
+Method & Steps & Greedy & pass@1 & pass@3 \\
+\midrule
+\wmppo{} (ours) (3) & 153k & 88.7 & 90.8 & 95.4 \\
+\wmppo{} (policy channel only) (3) & 147k & 91.4\sigdn{} & 92.9\sigdn{} & 96.5 \\
+PPO-160 (3) & 161k & 85.0\sigup{} & 87.3\sigup{} & 93.4 \\
+PPO-256 (3) & 226k & 90.8\sigdn{} & 91.1 & 95.4 \\
+Wide-Tree-PPO (3) & 165k & 87.3 & 90.6 & 96.1 \\
+Fixed WM & 153k & 93.4\sigdn{} & 92.2 & 96.0 \\
+PaW (coefficient 1.0) & 136k & 93.1\sigdn{} & 91.8 & 95.6 \\
+\wmppo{}, second run of seed 2$^{s}$ & 152k & 90.1 & 91.2 & 93.8 \\
+\bottomrule
+\end{tabular}

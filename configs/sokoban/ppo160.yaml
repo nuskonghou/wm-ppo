@@ -1,0 +1,20 @@
+# PPO-160 -- sokoban
+# Paper: Table 18 (Appendix E.6).
+name: "PPO-160"
+arm: ppo160
+iters: 36
+fork: warmup       # start from the shared warm-up checkpoint (iteration 12, same task order)
+runs:              # paper run (the k-th run of this method in the paper) -> --seed
+  1: 0
+args:              # alf_final.py arguments of the reported runs (all others keep their defaults)
+  scale: 0.5
+  eval-every: 3
+  max-new-tokens: 1024
+  max-steps: 15
+world_model: none
+layout:            # GPUs: one per inference server (two for the 32B teacher), plus the trainers
+  policy_servers: 2
+  trainer_gpus: 2
+workers: 64
+sglang_extra: "--cuda-graph-max-bs=96"
+evaluate: [24, 36]   # iterations evaluated in the paper

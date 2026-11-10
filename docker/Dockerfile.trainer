@@ -1,0 +1,12 @@
+# Trainer and inference-server image: the slime image of every run in the paper (sglang + PyTorch), pinned by digest
+# (public tag slimerl/slime:nightly-dev-20260707a), plus peft 0.21.2 in a virtual environment that uses the image's
+# packages. Used for the sglang servers (policy, world model, teacher) and for all trainers.
+#   docker build -t wmppo-trainer -f docker/Dockerfile.trainer docker
+# A copy of the base image loaded with docker load can be used by its local name if the daemon does not list it under
+# the digest: --build-arg BASE_IMAGE=slimerl/slime:<tag> (its config digest is
+# sha256:233e8dab397af709ec4fe6a2ad2fb8221d52a6355a0eba78b8a90a2708a5dfbd).
+ARG BASE_IMAGE=slimerl/slime@sha256:a7317182c71d35712ee4edc86a5d1c313dc969efdf0026d339673299c186ea75
+FROM ${BASE_IMAGE}
+RUN python3 -m venv --system-site-packages /opt/trainvenv \
+ && /opt/trainvenv/bin/pip install --no-cache-dir peft==0.21.2 \
+ && /opt/trainvenv/bin/python -c "import peft, torch; print('peft', peft.__version__, 'torch', torch.__version__)"

@@ -1,0 +1,19 @@
+# CAPO, clip 0.1 (main table: iteration 18) -- scienceworld
+# Paper: Table 2; Table 8.
+# Diverged at iteration 28; the main table reports iteration 18 (Appendix D).
+name: "CAPO, clip 0.1 (main table: iteration 18)"
+arm: capo160v2
+iters: 60
+fork: warmup       # start from the shared warm-up checkpoint (iteration 12, same task order)
+runs:              # paper run (the k-th run of this method in the paper) -> --seed
+  1: 0
+args:              # alf_final.py arguments of the reported runs (all others keep their defaults)
+  scale: 0.5
+  eval-every: 3
+  capo-eps: 0.1
+world_model: none
+layout:            # GPUs: one per inference server (two for the 32B teacher), plus the trainers
+  policy_servers: 1
+  trainer_gpus: 2
+workers: 48
+evaluate: [18]   # iterations evaluated in the paper

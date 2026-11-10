@@ -1,0 +1,19 @@
+# Shared PPO warm-up (iterations 1-12) -- alfworld
+# Paper: Section 4.1.
+# Iteration 1 plays 128 tasks (--scale 1), iterations 2-12 play 64 (--scale 0.5). The paper runs start from the released warm-up checkpoint; this config retrains a warm-up with the same budget.
+name: "Shared PPO warm-up (iterations 1-12)"
+arm: ppo
+iters: 12
+fork: none
+phases:            # the warm-up: (last iteration, arguments that differ between phases)
+  - {iters: 1, scale: 1}
+  - {iters: 12, scale: 0.5}
+runs:              # paper run (the k-th run of this method in the paper) -> --seed
+  1: 0
+args:              # alf_final.py arguments of the reported runs (all others keep their defaults)
+  {}
+world_model: none
+layout:            # GPUs: one per inference server (two for the 32B teacher), plus the trainers
+  policy_servers: 1
+  trainer_gpus: 2
+workers: 48

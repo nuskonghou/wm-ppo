@@ -1,0 +1,16 @@
+\begin{tabular}{l l l c c}
+\toprule
+Baseline & Setting & Outcome & Greedy & pass@1 \\
+\midrule
+CAPO & clip 0.3 (ALFWorld setting) & diverged, it.~14 & -- & -- \\
+ & clip 0.1 & diverged, it.~28; it.~18 in Table~\ref{tab:main} & 21.1 & 20.0 \\
+ & clip 0.03 & diverged, it.~18 & -- & -- \\
+\sopo{} & clip 0.2 (published) & collapsed after it.~36 & 15.8 & 16.2 \\
+ & clip 0.02 (KL rule; Table~\ref{tab:main}) & it.~60 & 46.5 & 49.4 \\
+ & clip 0.1 (clipped-token rule) & no divergence; it.~60 (best 22.9\%, it.~36) & 4.2 & 10.8 \\
+\steppo{} & clip 0.1 (ALFWorld setting) & it.~60 & 25.0 & 26.5 \\
+PaW & coefficient 1.0 (published) & action tags lost from it.~20 & 6.0 & 30.8 \\
+ & coefficient 0.5 (Table~\ref{tab:main}) & it.~60 & 35.6 & 38.8 \\
+ & coefficient 0.25 & it.~60 & 32.4 & 32.9 \\
+\bottomrule
+\end{tabular}

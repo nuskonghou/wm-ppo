@@ -1,0 +1,48 @@
+WM-PPO: Learning to Act with World Models by Valuing What Comes Next
+Copyright 2026 the authors of the paper
+
+Licensed under the Apache License, Version 2.0 (see LICENSE). This product includes or adapts code from the projects
+below; their copyright and license notices are reproduced here.
+
+1. verl-agent -- https://github.com/langfengQ/verl-agent (commit 20bd331), Apache License 2.0
+   - alfworld/grpo_family.py, scienceworld/grpo_family.py: the GRPO, GiGPO and HGPO advantage estimators, ported from
+     verl/trainer/ppo/core_algos.py, gigpo/core_gigpo.py and recipe/hgpo/core_hgpo.py;
+   - sokoban/sokoban_gen.py: the Sokoban room generator, ported from
+     agent_system/environments/env_package/sokoban/sokoban/room_utils.py;
+   - alfworld/prompts.py, scienceworld/prompts.py, sokoban/prompts.py: the layout of the policy prompts follows
+     verl-agent's ALFWorld and Sokoban templates (agent_system/environments/prompts/).
+   verl-agent NOTICE:
+     This project includes code from the verl project.
+     Copyright 2023-2024 Bytedance Ltd. and/or its affiliates
+     Additional modifications and contributions:
+     Copyright 2025 Nanyang Technological University (NTU), Singapore and the verl-agent (GiGPO) team.
+
+2. gym-sokoban -- https://github.com/mpSchrader/gym-sokoban, MIT License
+   The room generation of sokoban/sokoban_gen.py is the verl-agent adaptation of gym-sokoban's room generator.
+     MIT License
+     Copyright (c) 2018 Max-Philipp Schrader
+     Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+     documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+     the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+     permit persons to whom the Software is furnished to do so, subject to the following conditions:
+     The above copyright notice and this permission notice shall be included in all copies or substantial portions of
+     the Software.
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+     WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+     COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+     OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+3. Self-Distillation-AgentRL (OCSD) -- https://github.com/aim-uofa/Self-Distillation-AgentRL (commit 35a44f5),
+   Apache License 2.0
+   - alfworld/rollout.py, scienceworld/rollout.py: four helper functions of the OCSD baseline (extract_action_text,
+     build_action_schema, build_future_block, insert_future_evidence_before_response) from verl/trainer/ppo/ocsd_utils.py.
+   Its NOTICE file is the verl-agent NOTICE reproduced in 1.
+
+4. Policy-WorldModel-Agent (PaW) -- https://github.com/ColinLu50/Policy-WorldModel-Agent (commit 4feb964),
+   Apache License 2.0
+   - The PaW baseline (train_ppo_alf_paw.py) follows the released code (compute_world_model_loss, rollout_loop.py). Its
+     prediction prompts are not included in this repository: the trainer reads them at run time from a clone of the PaW
+     repository (third_party/Policy-WorldModel-Agent or $PAW_REPO).
+
+The other baselines (CAPO, SO-PPO / ST-PPO, VAPO-lite, Tree-GRPO, ProAct's MC-PPO, standard OPD) are implemented from
+their papers and released configurations; no code is copied from their repositories.
