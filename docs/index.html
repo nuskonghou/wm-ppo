@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#103b34">
+  <meta name="description" content="WM-PPO learns from the value of predicted state transitions: a world model predicts action consequences, and PPO's critic turns them into calibrated signals for policy and value learning.">
+  <meta name="keywords" content="WM-PPO, World Models, Reinforcement Learning, Agentic RL, PPO, LLM Agents, Sparse Rewards, Transition Values, ALFWorld, ScienceWorld">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Learning to Act with World Models by Valuing What Comes Next · WM-PPO">
+  <meta property="og:description" content="Beyond sparse rewards: turning the value implicit in predicted state transitions into policy and critic learning signals.">
+  <meta property="og:image" content="assets/fig2_framework.png">
+  <title>WM-PPO · Learning to Act with World Models by Valuing What Comes Next</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <style>
+    :root{--ink:#112a28;--teal:#0e6756;--teal-dark:#06483c;--leaf:#2d9475;--muted:#63726c;--line:#dce4de;--soft:#eff5f0;--paper:#f9faf7;--white:#fff;--blue:#4a7f9f;--max:1150px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:92px}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+    a{color:var(--teal);text-decoration:none}a:hover{text-decoration:underline}a:focus-visible,button:focus-visible{outline:3px solid #78b5a6;outline-offset:4px}img{display:block;max-width:100%}figure{margin:0}strong{font-weight:680}.container{width:min(var(--max),calc(100% - 56px));margin-inline:auto}
+    .topbar{position:sticky;top:0;z-index:10;background:rgba(249,250,247,.93);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{display:flex;align-items:center;justify-content:space-between;gap:22px;min-height:74px}.mark{font-size:20px;font-weight:840;letter-spacing:-.045em;color:var(--ink)}.mark span{color:var(--teal)}.navlinks{display:flex;flex-wrap:wrap;gap:28px;align-items:center}.navlinks a{font-weight:620;font-size:13px;color:#53655e}.navlinks a:hover{color:var(--teal);text-decoration:none}.nav-cta{padding:9px 17px!important;border:1px solid #9eb8aa;border-radius:999px;color:var(--teal)!important}
+    .hero{position:relative;overflow:hidden;background:radial-gradient(ellipse 65% 85% at 95% 8%,#d5ece0 0%,transparent 75%),linear-gradient(145deg,#fbfdfa 0%,#e9f1ec 100%);border-bottom:1px solid var(--line);padding:85px 0 83px}.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:8%;align-items:center}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:780;color:var(--teal);margin-bottom:19px}.hero h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(42px,5vw,68px);line-height:1.09;letter-spacing:-.048em;margin:0 0 26px;font-weight:600;max-width:850px}.hero h1 em{font-style:normal;color:var(--teal)}.lead{font-size:clamp(17px,1.7vw,20px);line-height:1.6;color:#455d54;max-width:660px;margin:0 0 26px}.hero .authors{font-size:14px;color:#4b615a;max-width:690px;line-height:1.8}.affils{font-size:12px;color:#718079;margin-top:6px}.links{display:flex;flex-wrap:wrap;gap:11px;margin-top:28px}.btn{display:inline-flex;justify-content:center;align-items:center;padding:12px 19px;border-radius:9px;font-weight:750;font-size:14px;border:1px solid var(--teal);transition:transform .12s,box-shadow .12s}.btn:hover{text-decoration:none;transform:translateY(-1px);box-shadow:0 6px 14px #123e3320}.btn.primary{background:var(--teal);color:white}.btn.secondary{background:#fff9;color:var(--teal)}
+    .hero-panel{background:#fffc;border:1px solid #cbded3;border-radius:20px;box-shadow:0 20px 50px #1a473c12;padding:25px}.hero-panel .mini-header{display:flex;justify-content:space-between;font-size:11px;text-transform:uppercase;color:#597368;font-weight:770;letter-spacing:.1em}.stepflow{display:grid;gap:10px;margin-top:22px}.mini-step{padding:15px 16px;border-radius:12px;background:var(--soft);border:1px solid #d9e6dd}.mini-step:nth-child(2){background:#e9f1f8;border-color:#d7e3ef}.mini-step:nth-child(3){background:#e8f5f0;border-color:#cfe5dc}.mini-step span{display:block;color:var(--muted);font-size:11px;font-weight:760;text-transform:uppercase;letter-spacing:.08em}.mini-step b{font-size:16px}.step-arrow{text-align:center;color:#7c9d8d;line-height:8px}.hero-panel .note{font-size:12px;color:#697970;margin:17px 0 0}.core-ribbon{border-bottom:1px solid var(--line);background:#fff}.core-ribbon .container{display:grid;grid-template-columns:repeat(3,1fr);gap:0}.fact{padding:25px 28px;border-right:1px solid var(--line)}.fact:first-child{padding-left:0}.fact:last-child{border:0}.fact .facttop{color:#70817a;font-size:12px;text-transform:uppercase;letter-spacing:.09em;font-weight:740}.fact strong{display:block;font-size:17px;line-height:1.5;margin-top:4px}
+    section{padding:96px 0}.section-top{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:32px}.kicker{text-transform:uppercase;letter-spacing:.16em;font-size:12px;font-weight:800;color:var(--teal);margin:0 0 11px}.section-top h2,.section-heading{font-family:Georgia,"Times New Roman",serif;font-size:clamp(32px,3.7vw,49px);line-height:1.18;letter-spacing:-.03em;font-weight:550;margin:0}.section-desc{max-width:490px;color:var(--muted);font-size:15px;margin:0}.textblock{font-size:17px;line-height:1.75;color:#41554d;max-width:950px}.textblock p{margin:0 0 20px}.argument-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:35px}.argument{padding:25px 27px;border:1px solid var(--line);border-radius:13px;background:#fff}.argument .number{font-size:12px;font-weight:830;letter-spacing:.12em;color:#7c9890}.argument h3{font-family:Georgia,serif;font-size:23px;margin:11px 0 8px;line-height:1.28;font-weight:580}.argument p{color:#55685e;margin:0;font-size:15px}.mathline{padding:18px 25px;margin-top:22px;background:#eaf3ed;border-radius:11px;font:18px/1.9 Georgia,serif;color:#245749;text-align:center}
+    .alt{background:#f0f5ef;border-top:1px solid #e3ebe4;border-bottom:1px solid #e3ebe4}.figure-wrap{background:#fff;padding:25px;border:1px solid var(--line);border-radius:15px;box-shadow:0 8px 25px #16382b07}.figure-wrap img{width:100%;height:auto}.figcap{font-size:13px;color:#75817a;line-height:1.65;margin-top:16px}.figcap b{color:#53685f}.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px;margin-top:29px}.test-card{background:#fff;border-radius:12px;padding:25px;border:1px solid var(--line)}.test-card .n{display:block;color:#14775c;font-weight:830;font-size:12px;letter-spacing:.12em}.test-card h3{font-family:Georgia,serif;line-height:1.3;font-size:22px;margin:10px 0 12px}.test-card .metric{font-size:27px;font-weight:770;color:var(--teal);letter-spacing:-.04em;line-height:1.3}.test-card p{font-size:14px;color:#62716b;line-height:1.6;margin:9px 0 0}
+    .channels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}.channel{border:1px solid var(--line);border-radius:13px;padding:28px;background:#fff}.channel.policy{border-top:4px solid #3f8c77}.channel.value{border-top:4px solid #538cb0}.channel .channel-id{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:780}.channel h3{margin:7px 0 8px;font-family:Georgia,serif;font-size:27px;font-weight:580}.channel p{color:#5a6e63;font-size:15px;margin:0}.formula{font:16px/1.5 "SFMono-Regular",Consolas,monospace;color:#21453c;background:#eff5f1;border-radius:7px;padding:13px;margin:18px 0;overflow:auto}.gate{margin-top:18px;border-left:4px solid #74ae8c;background:#ecf4ee;padding:22px 29px;border-radius:0 9px 9px 0}.gate h3{font-size:17px;margin:0 0 5px}.gate p{font-size:15px;color:#546a5f;margin:0}
+    .results-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.result-card{border:1px solid #dbe5dd;background:#fff;border-radius:13px;padding:29px}.result-card .env{font-size:13px;font-weight:820;color:#637a6c;letter-spacing:.1em;text-transform:uppercase}.result-card h3{font-family:Georgia,serif;font-size:26px;margin:7px 0 12px;font-weight:570}.result-row{display:flex;gap:18px;align-items:baseline}.result-row strong{font-size:47px;letter-spacing:-.06em;color:var(--teal);line-height:1.2}.result-row span{font-size:18px;color:#89998f}.result-card .gain{color:#477b68;font-weight:740;font-size:15px;margin-top:9px}.result-card .bar{display:flex;align-items:center;gap:12px;margin-top:20px}.result-card .bar label{min-width:70px;color:#75857b;font-size:12px}.track{height:11px;background:#eef3ee;border-radius:99px;overflow:hidden;flex:1}.fill{height:100%;background:var(--teal);border-radius:99px}.fill.baseline{background:#a7b4ad}.results-note{color:#718078;font-size:13px;margin:21px 0 28px}.fig-pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}.fig-pair .figure-wrap{padding:15px}.fig-pair .figcap{padding:0 7px}
+    .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}.story-copy p{color:#536a5e;font-size:17px;line-height:1.75}.quote{font-family:Georgia,serif;font-style:italic;font-size:27px;line-height:1.45;color:#1c5243;margin:25px 0;border-left:3px solid #5d9d84;padding-left:20px}.story-facts{list-style:none;padding:0;margin:20px 0}.story-facts li{border-top:1px solid var(--line);padding:13px 0;font-size:15px;color:#556b60}.story-facts li b{color:var(--ink)}
+    .limits{display:grid;grid-template-columns:1fr 1fr;gap:25px}.limits .content{max-width:610px;color:#586a60}.limits h3{margin:0 0 12px;font-size:20px}.limits ul{padding-left:22px}.limits li{margin:9px 0}.citation{margin-top:32px;background:#122d28;color:#dbede2;border-radius:14px;padding:26px;position:relative}.citation pre{white-space:pre-wrap;word-break:break-word;margin:0;font-size:12px;line-height:1.6}.copy{border:1px solid #6d9584;background:#234c40;color:#fff;border-radius:7px;padding:8px 12px;cursor:pointer;font-size:12px;position:absolute;right:20px;top:20px}.copy:hover{background:#386655}.last-cta{background:linear-gradient(115deg,#103d33,#1e624e);padding:54px 0;color:#eefbf4}.last-cta .container{display:flex;align-items:center;justify-content:space-between;gap:25px}.last-cta h2{font-family:Georgia,serif;font-size:35px;line-height:1.3;font-weight:500;margin:0}.last-cta p{font-size:15px;color:#bad6c9;max-width:650px}.last-cta .btn{background:#f7fff9;color:#185444;border-color:#fff}.last-cta p a{color:#eefbf4;text-decoration:underline}.footer{padding:29px 0 42px;background:#102e28;color:#aac6b7;font-size:12px}.footer a{color:#d5eee2}.footer-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px}
+    @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:45px}.hero-panel{max-width:650px}.navlinks{gap:13px}.test-grid{grid-template-columns:1fr}.story-grid{grid-template-columns:1fr}.hero h1{font-size:54px}}
+    @media(max-width:650px){.container{width:min(100% - 34px,var(--max))}.nav{align-items:flex-start;flex-direction:column;gap:7px;padding:13px 0}.navlinks{gap:14px}.navlinks a{font-size:12px}.hero{padding:56px 0 55px}.hero h1{font-size:40px}.lead{font-size:17px}.core-ribbon .container{grid-template-columns:1fr}.fact{border-right:0;border-bottom:1px solid var(--line);padding:16px 0}.section-top{display:block}.section-desc{margin-top:15px}section{padding:61px 0}.argument-grid,.channels,.results-grid,.fig-pair,.limits{grid-template-columns:1fr}.figure-wrap{padding:12px}.result-row strong{font-size:42px}.last-cta .container{display:block}.last-cta .btn{margin-top:20px}.citation pre{font-size:11px;padding-top:28px}.hero-panel{padding:19px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="container nav" aria-label="Primary">
+      <a class="mark" href="#top" aria-label="WM-PPO Home">WM<span>·</span>PPO</a>
+      <div class="navlinks">
+        <a href="#idea">The Question</a><a href="#evidence">Diagnostics</a><a href="#method">Method</a><a href="#results">Results</a><a href="#behavior">Behavior</a>
+        <a href="https://github.com/nuskonghou/wm-ppo" target="_blank" rel="noopener">Code</a>
+        <a class="nav-cta" href="https://arxiv.org/abs/2611.12200" target="_blank" rel="noopener">Read Paper ↗</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero" id="top"><div class="container hero-grid">
+      <div>
+        <div class="eyebrow">Research Project · World Models × Reinforcement Learning</div>
+        <h1>Learning to Act with World Models by <em>Valuing What Comes Next</em></h1>
+        <p class="lead">A sparse reward tells an agent whether it succeeded. The transitions it experiences reveal what has changed. <strong>Can we turn those changes into useful signals for learning?</strong></p>
+        <div class="authors"><strong>Chenghao Gao*</strong> · <strong>Zhi Zhang*</strong> · Dian Jin · Yihe Pan · Doudou Zhou†</div>
+        <div class="affils">National University of Singapore · UCLA · Fudan University · * Equal contribution · † Corresponding author</div>
+        <div class="links"><a class="btn primary" href="https://arxiv.org/abs/2611.12200" target="_blank" rel="noopener">Read the Paper ↗</a><a class="btn secondary" href="https://github.com/nuskonghou/wm-ppo" target="_blank" rel="noopener">Code ↗</a><a class="btn secondary" href="https://huggingface.co/nuskonghou/wm-ppo" target="_blank" rel="noopener">Checkpoints ↗</a><a class="btn secondary" href="#method">Explore the Method ↓</a></div>
+      </div>
+      <aside class="hero-panel" aria-label="Central research idea">
+        <div class="mini-header"><span>The missing feedback</span><span>WM-PPO</span></div>
+        <div class="stepflow">
+          <div class="mini-step"><span>Real environment</span><b>What did the action change?</b></div>
+          <div class="step-arrow">↓</div>
+          <div class="mini-step"><span>World model + critic</span><b>How valuable is that change for success?</b></div>
+          <div class="step-arrow">↓</div>
+          <div class="mini-step"><span>Policy + critic learning</span><b>Learn from predicted alternatives, not just the executed action.</b></div>
+        </div>
+        <p class="note">Real outcomes calibrate both learning channels. Training uses no teacher or privileged information; inference uses the policy alone.</p>
+      </aside>
+    </div></div>
+    <div class="core-ribbon"><div class="container">
+      <div class="fact"><div class="facttop">Learning signal</div><strong>Value predicted state transitions</strong></div>
+      <div class="fact"><div class="facttop">Training</div><strong>Real interactions + calibrated alternatives</strong></div>
+      <div class="fact"><div class="facttop">Deployment</div><strong>Policy only · No world-model inference</strong></div>
+    </div></div>
+
+    <section id="idea"><div class="container">
+      <div class="section-top"><div><p class="kicker">01 / Motivation</p><h2>Reward is sparse. Consequences are not.</h2></div><p class="section-desc">The central gap is not merely an insufficient number of reward labels. It is the missing interpretation of how each action changes the conditions for eventual success.</p></div>
+      <div class="textblock"><p>Imagine an agent tasked with cleaning a plate and putting it in a cabinet. It may find the plate and carry it to the cabinet, but place it there <strong>before cleaning it</strong>. The final reward marks the attempt as a failure without explaining which earlier choice was decisive.</p><p>World models can predict what happens after an action—but a predicted observation is not itself a measure of progress. Opening an irrelevant cabinet might produce a long description without helping the task; heating a mug may produce a short confirmation that establishes a crucial prerequisite.</p></div>
+      <div class="argument-grid">
+        <div class="argument"><span class="number">THE PREDICTION QUESTION</span><h3>What will change?</h3><p>A world model learns action-conditioned environment dynamics from the agent's observed state transitions.</p></div>
+        <div class="argument"><span class="number">THE VALUATION QUESTION</span><h3>What will that change be worth?</h3><p>The existing critic estimates what the current policy can still accomplish from the resulting state.</p></div>
+      </div>
+      <div class="mathline" aria-label="Value equals probability of success under the current policy">For binary terminal rewards: &nbsp; <i>V</i><sup>π</sup>(<i>s</i>) = Pr<sub>π</sub>(success | <i>s</i>)</div>
+      <p class="section-desc" style="max-width:900px;margin-top:17px">The value of a transition is therefore tied to the change in the current policy's success probability—not the surface size of the observation change. As the policy improves, the same successor state may have a different value.</p>
+    </div></section>
+
+    <section class="alt" id="evidence"><div class="container">
+      <div class="section-top"><div><p class="kicker">02 / Before the algorithm</p><h2>Three questions. Three diagnostics.</h2></div><p class="section-desc">The paper first establishes the premise on ALFWorld before introducing the online training method.</p></div>
+      <figure class="figure-wrap"><img src="assets/fig1_diagnostics.png" alt="Paper Figure 1: ALFWorld candidate selection, critic reliability, and one-epoch policy learning diagnostics" loading="lazy"><figcaption class="figcap"><b>Figure 1 · Original paper.</b> (a) Candidate selection; (b) critic ranking reliability; (c) policy-only update from predicted consequence comparisons.</figcaption></figure>
+      <div class="test-grid">
+        <article class="test-card"><span class="n">TEST 01</span><h3>Can the critic value real successors?</h3><div class="metric">56.9% → 70.4%</div><p>Majority vote versus selecting candidates using the critic on their <strong>real</strong> next states.</p></article>
+        <article class="test-card"><span class="n">TEST 02</span><h3>Do predictions preserve useful differences?</h3><div class="metric">66.4% success</div><p>The trained world model supplies <strong>predicted</strong> successors; the critic values them for candidate selection.</p></article>
+        <article class="test-card"><span class="n">TEST 03</span><h3>Can the policy learn the comparison?</h3><div class="metric">57.1% → 65.3%</div><p>One reward-free <strong>diagnostic</strong> policy update; the updated policy then acts on its own.</p></article>
+      </div>
+      <p class="results-note">These are three diagnostic experiments with a fixed initial policy—not the final WM-PPO online update. Ranking reliability depends on the value gap, which motivates the gate in the full method.</p>
+    </div></section>
+
+    <section id="method"><div class="container">
+      <div class="section-top"><div><p class="kicker">03 / Method</p><h2>One world model. Two learning channels.</h2></div><p class="section-desc">Transition values are obtained once and reused to guide the policy and train the critic; observed branch outcomes calibrate both.</p></div>
+      <figure class="figure-wrap"><img src="assets/fig2_framework.png" alt="Paper Figure 2: WM-PPO architecture showing real interaction, prediction, PPO critic, policy and value channels, and calibrated real branches" loading="lazy"><figcaption class="figcap"><b>Figure 2 · Original paper.</b> The main rollout provides real transitions and returns. Candidate predictions are evaluated by the same critic; real chain–branch pairs calibrate their learning weights.</figcaption></figure>
+      <p class="textblock" style="margin-top:25px">At each training state, the policy samples <strong>K actions</strong> and executes its first sample. For every distinct candidate, the world model predicts its next observation, and the critic values that predicted successor. The resulting estimates approximate the candidate actions' success values.</p>
+      <div class="channels">
+        <article class="channel policy"><div class="channel-id">Channel A / Policy</div><h3>Learn which consequence is better</h3><p>Comparisons among candidates generate auxiliary preferences and advantages in PPO's clipped policy objective. The candidates need not all have been executed.</p><div class="formula">candidate values → relative preferences → PPO-clip</div><p>The update is based on the policy's <em>own sampled candidates</em>, not labels from an external teacher.</p></article>
+        <article class="channel value"><div class="channel-id">Channel B / Value</div><h3>Learn the state's expected potential</h3><p>The mean of the candidate transition values provides a one-step auxiliary target for the current state's critic, alongside supervision from real returns.</p><div class="formula">meanₐ [Vψ(predicted successorₐ)] → Vψ(current state)</div><p>A better critic can also improve PPO's later advantage estimates and future candidate comparisons.</p></article>
+      </div>
+      <div class="gate"><h3>The shared reliability gate</h3><p>Prediction can be mistaken; value rankings can be weak. Real main-episode and branch outcomes test earlier preferences. A single margin-dependent gate weights both learning channels according to whether comparisons of similar size have actually distinguished better outcomes. The predicted alternatives never replace real rewards or become fabricated environment returns.</p></div>
+    </div></section>
+
+    <section class="alt" id="results"><div class="container">
+      <div class="section-top"><div><p class="kicker">04 / Evaluation</p><h2>More learning from real interaction.</h2></div><p class="section-desc">Final evaluation uses the learned policy alone. The primary comparison approximately matches real environment interaction budgets.</p></div>
+      <div class="results-grid">
+        <article class="result-card"><div class="env">ALFWorld · Greedy success</div><h3>Learning to carry out prerequisite actions</h3><div class="result-row"><strong>87.5%</strong><span>vs PPO 63.5%</span></div><div class="gain">+24.0 percentage points</div><div class="bar"><label>WM-PPO</label><div class="track"><div class="fill" style="width:87.5%"></div></div></div><div class="bar"><label>PPO-160</label><div class="track"><div class="fill baseline" style="width:63.5%"></div></div></div></article>
+        <article class="result-card"><div class="env">ScienceWorld · Greedy success</div><h3>Learning on longer procedural tasks</h3><div class="result-row"><strong>52.9%</strong><span>vs PPO 39.3%</span></div><div class="gain">+13.6 points · +6.5 over strongest tested PPO refinement</div><div class="bar"><label>WM-PPO</label><div class="track"><div class="fill" style="width:52.9%"></div></div></div><div class="bar"><label>PPO-160</label><div class="track"><div class="fill baseline" style="width:39.3%"></div></div></div></article>
+      </div>
+      <p class="results-note">Means of three runs for WM-PPO and PPO-160; greedy policy-only evaluation. The real-step budget is comparable, not literally identical (102k vs 105k steps on ALFWorld; 128k vs 113k on ScienceWorld). See Table 2 and Figure 4 for the full protocol.</p>
+      <figure class="figure-wrap"><img src="assets/fig4_interaction_efficiency.png" alt="Paper Figure 4 plotting greedy success rates against thousands of real environment steps on ALFWorld and ScienceWorld" loading="lazy"><figcaption class="figcap"><b>Figure 4 · Original paper.</b> Interaction efficiency against a broad set of baselines. Extra world-model evaluations cost training computation but do not require executing each sampled alternative.</figcaption></figure>
+      <div class="argument-grid">
+        <div class="argument"><span class="number">STRUCTURAL CONTROL</span><h3>More real branches alone are not enough</h3><p>Wide-Tree-PPO keeps the rollout-tree structure but removes the auxiliary candidate update; on ScienceWorld it reaches 40.8%, versus 52.9% for full WM-PPO. Other controls isolate direct Q-value learning and frozen dynamics.</p></div>
+        <div class="argument"><span class="number">VALUE CHANNEL</span><h3>Its benefit is clearer in procedural tasks</h3><p>On ScienceWorld, the policy channel alone reaches 47.2%; the full method reaches 52.9%. On ALFWorld, the methods are close to the task ceiling, and the extra value channel does not improve final success.</p></div>
+      </div>
+    </div></section>
+
+    <section id="behavior"><div class="container">
+      <div class="section-top"><div><p class="kicker">05 / Understanding the gains</p><h2>From transition values to better decisions.</h2></div><p class="section-desc">A method should change how the agent advances the task, not just how its learning curve looks.</p></div>
+      <div class="story-grid"><div class="story-copy"><p class="quote">The agent learns to complete prerequisites before taking the action that depends on them.</p><p>In ALFWorld, the trained policy more often heats, cools, or cleans an object before placing it. In ScienceWorld, it less often commits to a final focus before the necessary conditions exist.</p><ul class="story-facts"><li><b>Procedural ScienceWorld:</b> 46.3% success for WM-PPO versus 29.6% for PPO-160.</li><li><b>ALFWorld processing tasks:</b> the largest gains occur where heating, cooling, or cleaning is needed before placement.</li><li><b>Inference:</b> these improvements are produced by the trained policy alone, without calling the world model.</li></ul></div><figure class="figure-wrap"><img src="assets/fig10_behavior.png" alt="Paper Figure 10: performance and behavioral patterns for tasks requiring prerequisites" loading="lazy"><figcaption class="figcap"><b>Figure 10 · Original paper.</b> Task-type success and behavioral evidence of prerequisites completed before commitment.</figcaption></figure></div>
+      <figure class="figure-wrap" style="margin-top:32px"><img src="assets/fig11_examples.png" alt="Paper Figure 11: illustrative mug-heating and red-box evaluation trajectories showing differences in action ordering" loading="lazy"><figcaption class="figcap"><b>Figure 11 · Original paper.</b> Two illustrative greedy evaluation games: a mug must be heated before cabinet placement; a ScienceWorld search requires the right object before committing to an answer. The value checks shown in the paper are post hoc, not inference-time reranking.</figcaption></figure>
+    </div></section>
+
+    <section class="alt" id="reliability"><div class="container">
+      <div class="section-top"><div><p class="kicker">06 / Reliability</p><h2>Not all predicted comparisons deserve equal trust.</h2></div><p class="section-desc">A learned world model can be wrong, and a critic's candidate ranking is not universally reliable. Real outcomes constrain how much learning signal is admitted.</p></div>
+      <div class="fig-pair"><figure class="figure-wrap"><img src="assets/fig5_reliability.png" alt="Paper Figure 5: large-margin preferences more reliably agree with real outcomes" loading="lazy"><figcaption class="figcap"><b>Figure 5 · Original paper.</b> Large-margin comparisons are most reliable; smaller margins remain difficult.</figcaption></figure><figure class="figure-wrap"><img src="assets/fig7_value_channel.png" alt="Paper Figure 7: critic fit, large-margin agreement, and procedural outcome differences" loading="lazy"><figcaption class="figcap"><b>Figure 7 · Original paper.</b> The value channel improves late critic fit and supports stronger comparisons on ScienceWorld.</figcaption></figure></div>
+      <p class="textblock" style="margin-top:27px">This is an essential part of the argument: <strong>world-model prediction is a source of potentially useful information, not an oracle.</strong> The method lets real interactions determine which classes of predicted preferences are reliable enough to influence learning.</p>
+    </div></section>
+
+    <section id="scope"><div class="container">
+      <div class="section-top"><div><p class="kicker">07 / Research scope</p><h2>What the evidence establishes—and what remains open.</h2></div></div>
+      <div class="limits"><div class="content"><h3>What we demonstrate</h3><ul><li>World-model predictions can carry task-relevant comparisons to actions the agent did not execute.</li><li>The same predictions can support both an auxiliary policy preference and a one-step critic target.</li><li>Calibration with real branch outcomes makes these signals useful during online training.</li><li>Training can improve policy-only success with a comparable real-interaction budget, without teacher supervision or privileged information.</li></ul></div><div class="content"><h3>Current limits</h3><ul><li>One 4B language-model backbone and two text environments; episodes limited to 40 steps.</li><li>Real-branch comparison requires reproducible prefixes or saved environment state.</li><li>Greedy one-step prediction does not represent transition uncertainty; longer-range implications rely on the critic.</li><li>Model errors and low-margin ambiguities remain; per iteration, training takes 1.3–1.6× the wall-clock time and 2.7–3.8× the GPU-hours of PPO-160.</li></ul></div></div>
+      <p class="textblock" style="margin-top:29px">The broader research question is how agents can <strong>learn from the information implicit in environment dynamics</strong>, especially when terminal rewards alone do not explain which state changes matter for future success.</p>
+      <div class="citation"><button class="copy" type="button" id="copyCitation">Copy BibTeX</button><pre id="citationText">@misc{gao2026learning,
+  title         = {Learning to Act with World Models by Valuing What Comes Next},
+  author        = {Gao, Chenghao and Zhang, Zhi and Jin, Dian and Pan, Yihe and Zhou, Doudou},
+  year          = {2026},
+  eprint        = {2611.12200},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+  url           = {https://arxiv.org/abs/2611.12200}
+}</pre></div>
+    </div></section>
+    <div class="last-cta"><div class="container"><div><h2>Learning from what an action changes.</h2><p>Read the full paper for the diagnostic design, online algorithm, baselines, reliability calibration, interaction accounting, and limitations. Code, configurations, per-game evaluation data and checkpoints are on <a href="https://github.com/nuskonghou/wm-ppo">GitHub</a> and <a href="https://huggingface.co/nuskonghou/wm-ppo">Hugging Face</a>.</p></div><a class="btn" href="https://arxiv.org/abs/2611.12200" target="_blank" rel="noopener">Paper on arXiv ↗</a></div></div>
+  </main>
+  <footer class="footer"><div class="container footer-inner"><span>© 2026 WM-PPO authors · Research project page</span><span>Chenghao Gao · Zhi Zhang · Dian Jin · Yihe Pan · Doudou Zhou · <a href="https://arxiv.org/abs/2611.12200">arXiv:2611.12200</a></span></div></footer>
+  <script>
+    const copyButton=document.getElementById('copyCitation');
+    copyButton.addEventListener('click',async()=>{
+      const value=document.getElementById('citationText').innerText;
+      try{await navigator.clipboard.writeText(value);copyButton.textContent='Copied!'}catch(e){copyButton.textContent='Select and copy BibTeX'}
+      setTimeout(()=>{copyButton.textContent='Copy BibTeX'},1700);
+    });
+  </script>
+</body>
+</html>

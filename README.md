@@ -1,11 +1,140 @@
+<div align="center">
+
 # Learning to Act with World Models by Valuing What Comes Next
 
-Code, configurations, per-game evaluation data and checkpoints for **WM-PPO**.
-Paper: [arXiv:XXXX.XXXXX](https://arxiv.org/abs/XXXX.XXXXX).
+### WM-PPO: Learning from the value of predicted state transitions
+
+**Chenghao Gao<sup>1,\*</sup> · Zhi Zhang<sup>2,\*</sup> · Dian Jin<sup>1</sup> · Yihe Pan<sup>3</sup> · Doudou Zhou<sup>1,†</sup>**
+
+<sup>1</sup> National University of Singapore · <sup>2</sup> University of California, Los Angeles · <sup>3</sup> Fudan University  
+<sup>\*</sup> Equal contribution · <sup>†</sup> Corresponding author
+
+[**📄 Paper (arXiv)**](https://arxiv.org/abs/2611.12200) · [**📑 PDF**](https://arxiv.org/pdf/2611.12200) · [**🤗 Checkpoints**](https://huggingface.co/nuskonghou/wm-ppo) · [**⚡ Quick start**](#quick-start)
+
+</div>
+
+> **A sparse terminal reward tells an agent whether it succeeded. The environment's transitions contain information about how each action changed its chances of succeeding.**
+
+WM-PPO learns to use that information. A world model, trained on **real transitions**, predicts what the policy's candidate actions would change. PPO's existing critic, trained primarily on **real returns**, values the predicted successor states according to the current policy's probability of eventual success. Those *transition values* then inform both policy and critic learning, with their reliability calibrated against real branch outcomes.
+
+**Only the policy is needed at inference. No teacher model or privileged environment information is used.**
+
+---
+
+## Why value what comes next?
+
+An agent may find a plate, pick it up, and put it in a cabinet—without first cleaning it. The binary terminal reward says **failure**. It does not tell the agent which earlier decision mattered, or what an unexecuted alternative might have made possible.
+
+Yet the environment records changes along the way. Some are consequential; some are not. A long new observation might simply enumerate irrelevant objects, while a short confirmation that a mug has been heated could satisfy a critical prerequisite.
+
+**Predicting an observation is not the same as knowing whether the action helps.** Its importance depends on the goal and what the *current policy* can still accomplish from the resulting state. For binary terminal rewards and undiscounted returns,
+
+$$
+V^\pi(s)=\Pr_\pi(\mathrm{success}\mid s),\quad
+Q^\pi(s,a)=\mathbb E[V^\pi(s')\mid s,a].
+$$
+
+A transition's contribution is reflected by the change in success probability, rather than by the surface magnitude of the observation change. WM-PPO combines predicted consequences with the existing critic's task-dependent valuation.
+
+## Three diagnostic questions, before proposing the method
+
+We first test the premise on ALFWorld. These are **diagnostics with a fixed policy**, not the final online WM-PPO training algorithm.
+
+![Figure 1: three ALFWorld diagnostics on candidate valuation, reliability, and policy learning](docs/assets/fig1_diagnostics.png)
+
+*Figure 1, from the paper. (a) Candidate selection; (b) value-ranking reliability; (c) learning from consequence-based candidate preferences.*
+
+1. **Can the critic value real successors?** Selecting the best of four sampled actions using the true successor's critic value achieves **70.4%** success, versus **56.9%** for majority vote.
+2. **Do world-model predictions preserve useful differences?** Selecting with a *trained* world model and the critic reaches **66.4%** success. Predicted consequences therefore recover a substantial part of the signal available from real successors.
+3. **Can those comparisons improve the policy itself?** In a separate one-epoch, reward-free diagnostic update using preference labels from the world model and critic, policy-only success rises from **57.1% to 65.3%**. At evaluation, the policy acts without either model.
+
+A crucial qualification: comparisons are **not equally reliable**. Larger value margins tend to be more informative, motivating calibration from real outcomes rather than unconditional trust in predictions.
+
+## WM-PPO: One world model, two learning channels
+
+![Figure 2: complete WM-PPO framework—real interaction, world-model predictions, policy and value channels, and branch-based calibration](docs/assets/fig2_framework.png)
+
+*Figure 2, from the paper. The policy's sampled alternatives are predicted and valued; real branches calibrate how strongly both learning channels are used.*
+
+At a state reached during training, the policy samples **K candidate actions** and executes its **first** sample, preserving the behavior policy. For each distinct candidate, a world model predicts one next observation. The critic evaluates the resulting predicted successor:
+
+$$
+\widehat q_t(a)=V_\psi\!\left(\widehat s_{t+1}(a)\right),
+$$
+
+with terminal outcomes handled explicitly. The same set of transition values supports two complementary updates:
+
+| Learning channel | What it learns from predicted transitions | Where the signal enters |
+|:--|:--|:--|
+| **Policy channel** | Which of the policy's sampled actions leads to the more valuable predicted successor | Auxiliary candidate preferences/advantages in PPO's clipped policy objective |
+| **Value channel** | How valuable the current state is under the policy's **own candidate distribution** | Mean transition value as a one-step auxiliary target for the critic, in addition to real returns |
+
+### Reliability from real outcomes
+
+The world model can be wrong, and the critic's rankings can be biased. Each training task therefore includes a real main episode (the *chain*) and three real branches that try alternative actions from earlier states. Previous chain–branch outcomes determine a **shared, margin-dependent gate**, which weights both channels according to how useful similarly sized predicted preferences have been in real interactions.
+
+The gate does **not** replace the terminal reward, and predicted observations do **not** become fictitious returns. The critic's main supervision remains real returns; the world model is trained on real observed transitions. The additional computation is confined to training.
+
+## Evidence: better learning from comparable real interaction
+
+All numbers below are **greedy, policy-only success rates** on the paper's evaluation games (means over three runs for the primary methods). Checkpoints and budgets follow the evaluation protocol in the paper.
+
+| Environment | PPO-160 | WM-PPO | Improvement |
+|:--|--:|--:|--:|
+| **ALFWorld** | 63.5% | **87.5%** | **+24.0 pp** |
+| **ScienceWorld** | 39.3% | **52.9%** | **+13.6 pp** |
+
+The policy-channel-only variant reaches **88.4%** on ALFWorld and **47.2%** on ScienceWorld. On the more procedural ScienceWorld, adding the value channel raises greedy success to **52.9%**. The full method exceeds the strongest tested PPO refinement on ScienceWorld (SO-PPO, 46.5%) by **6.5 percentage points**, while the strongest PPO refinements are much closer to WM-PPO on ALFWorld.
+
+![Figure 4: training interaction versus success for the compared methods](docs/assets/fig4_interaction_efficiency.png)
+
+*Figure 4, from the paper. Greedy success versus actual environment steps; learning from predicted alternatives trades additional training computation for more information from real interactions.*
+
+These improvements are not simply explained by collecting larger real trees: **Wide-Tree-PPO**, which retains the branches but removes the auxiliary policy update, reaches **40.8%** on ScienceWorld. The controls also examine direct learned Q-values, fixed world models, and several forms of auxiliary supervision. See Sections 4–5 for complete comparisons, real-step accounting, and significance tests.
+
+## What changes in the learned behavior?
+
+The most revealing outcomes are not only the final scores: the learned policy more often **completes prerequisites before committing**.
+
+![Figure 10: task performance and behavior of WM-PPO and PPO baselines](docs/assets/fig10_behavior.png)
+
+*Figure 10, from the paper. The gains are particularly pronounced on tasks that require intermediate processing or conditions.*
+
+![Figure 11: illustrative ALFWorld and ScienceWorld trajectories](docs/assets/fig11_examples.png)
+
+*Figure 11, from the paper. In ALFWorld, WM-PPO heats a mug before placing it in a cabinet; in ScienceWorld, it fulfills the needed conditions before committing to an answer. These are illustrative evaluation trajectories, not claims that every episode follows these paths.*
+
+On procedural ScienceWorld tasks, WM-PPO reaches **46.3%** greedy success compared with **29.6%** for PPO-160. On ALFWorld, it more often carries out heating, cooling, or cleaning before placing an object. This behavior connects the transition-value comparisons to a concrete long-horizon decision problem: recognizing when an action changes what remains achievable.
+
+## Why the reliability gate matters
+
+![Figure 5: agreement of preferences with real outcomes](docs/assets/fig5_reliability.png)
+
+*Figure 5, from the paper. High-margin preferences agree more often with the real outcomes of different branches; small-margin comparisons are less reliable.*
+
+![Figure 7: value-channel diagnostic results](docs/assets/fig7_value_channel.png)
+
+*Figure 7, from the paper. On ScienceWorld, the value channel improves late critic fit and helps the reliability of candidate comparisons and procedural outcomes.*
+
+The predicted valuations are **not** universally correct. The method learns when comparison signals deserve weight, and the value channel can improve the critic that supplies those comparisons. This is why the two channels and their shared calibration are central to the method, not decorative add-ons.
+
+## Scope and limitations
+
+- Evaluation uses **Qwen3-4B-Instruct-2507** adapters, **ALFWorld and ScienceWorld**, and episodes capped at 40 steps.
+- Real-branch calibration assumes reproducible prefixes or resumable environment state; the tested environments are deterministic.
+- A **single greedy one-step prediction** does not capture outcome uncertainty; long-range effects are represented through the critic, and model or value errors may bias auxiliary signals.
+- WM-PPO adds training-time computation (per iteration, **1.3–1.6× the wall-clock time and 2.7–3.8× the GPU-hours of PPO-160**) in exchange for improved learning per real interaction.
+
+We see the paper as evidence for a broader direction: **using the task value implicit in learned environment dynamics for policy improvement**, rather than treating prediction solely as an inference-time simulator or as an auxiliary reconstruction objective.
+
+For the full proof-of-concept diagnostics, the online training algorithm, budget accounting, ablations, and limitations, see [the paper](https://arxiv.org/abs/2611.12200).
+
+---
 
 ## Quick start
 
-Two Docker images, the base model and the checkpoints are needed. Setup is under [Installation](#installation);
+This repository holds the code, the configuration of every reported method and the per-game evaluation data of the
+paper. Two Docker images, the base model and the checkpoints are needed. Setup is under [Installation](#installation);
 the checkpoints are on Hugging Face, [nuskonghou/wm-ppo](https://huggingface.co/nuskonghou/wm-ppo), and described in
 [WEIGHTS.md](WEIGHTS.md).
 
@@ -51,32 +180,6 @@ Table 15.
 Greedy decoding on the inference server is not bit-exact, so a repeated evaluation can differ from the official one on a
 few games.
 
-## Method
-
-A sparse terminal reward says little about individual steps, but each state transition can change the conditions for
-success long before the reward arrives. WM-PPO combines a world model, trained on the agent's real transitions to predict
-the next observation, with PPO's critic, which estimates the current policy's probability of success:
-
-- for every action the policy samples at a decision point, executed or not, the world model predicts the next
-  observation and the critic values the predicted successor;
-- **policy channel**: comparisons among these values give the policy auxiliary advantages;
-- **value channel**: their mean gives the critic an auxiliary target;
-- **gate**: one shared gate weights both channels by how reliably comparisons with similar value margins predicted real
-  outcomes earlier in training.
-
-The policy, critic and world model are LoRA adapters on Qwen3-4B-Instruct-2507 and learn only from the agent's own
-interaction (no teacher, no privileged information). Only the policy is used at inference.
-
-| Method (Table 2) | ALFWorld, it. 36: greedy / pass@1 | ScienceWorld, it. 60: greedy / pass@1 |
-|---|---|---|
-| WM-PPO | 87.5 ± 0.9 / 87.8 ± 1.7 | 52.9 ± 2.3 / 51.6 ± 4.8 |
-| WM-PPO (policy channel only) | 88.4 ± 2.3 / 89.4 ± 1.6 | 47.2 ± 2.8 / 47.2 ± 1.7 |
-| PPO-160 | 63.5 ± 9.8 / 71.0 ± 6.0 | 39.3 ± 1.5 / 42.6 ± 2.5 |
-| PPO-256 | 83.1 ± 3.1 / 84.8 ± 1.2 | 43.8 ± 8.7 / 43.5 ± 6.6 |
-
-All baselines of the paper are in `configs/` (see [Baselines](#baselines)); `results/reference_tables/main.tex` is the
-full Table 2.
-
 ## Repository layout
 
 | Path | Content |
@@ -91,6 +194,7 @@ full Table 2.
 | `results/` | per-game official evaluations of every reported run, training curves, gate logs, diagnostics, the paper's tables ([results/README.md](results/README.md)) |
 | `analysis/` | table check, figures, Section 2 numbers, scoring of new evaluations |
 | `docs/REPRODUCE.md` | each table and figure: data, command, configs |
+| `docs/index.html`, `docs/assets/` | project page (GitHub Pages) and the paper figures shown in this README |
 | `tests/` | CPU tests |
 
 ## Installation
@@ -177,7 +281,7 @@ scripts/wmppo init-wm alfworld    # world model on the warm-up's executed transi
 ## Baselines
 
 All baselines start from the same warm-up and follow the same evaluation protocol; Appendix D of the paper describes
-each one. Config names:
+each one, and `results/reference_tables/main.tex` is the full Table 2. Config names:
 
 | Group (as in Table 2) | ALFWorld | ScienceWorld |
 |---|---|---|
@@ -254,11 +358,14 @@ values, parse every config and recompute the paper's tables from `results/`.
 ## Citation
 
 ```bibtex
-@article{gao2026wmppo,
-  title   = {Learning to Act with World Models by Valuing What Comes Next},
-  author  = {Gao, Chenghao and Zhang, Zhi and Jin, Dian and Pan, Yihe and Zhou, Doudou},
-  journal = {arXiv preprint arXiv:XXXX.XXXXX},
-  year    = {2026}
+@misc{gao2026learning,
+  title        = {Learning to Act with World Models by Valuing What Comes Next},
+  author       = {Gao, Chenghao and Zhang, Zhi and Jin, Dian and Pan, Yihe and Zhou, Doudou},
+  year         = {2026},
+  eprint       = {2611.12200},
+  archivePrefix= {arXiv},
+  primaryClass = {cs.AI},
+  url          = {https://arxiv.org/abs/2611.12200}
 }
 ```
 

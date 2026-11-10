@@ -10,13 +10,15 @@ FORBIDDEN = re.compile(r'\b10\.\d{1,3}\.\d{1,3}\.\d{1,3}\b|\b172\.(1[6-9]|2\d|3[
                        r'(?<![\w.])/(fsx|lustre|scratch|home|mnt|dev/shm)/|s3://|\b(sbatch|srun|salloc|squeue|scancel)\b|SLURM_|'
                        r'[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]')
 SKIP = {'.git', 'third_party', 'runs', 'models', 'data', 'weights', 'figures', '__pycache__'}
+BINARY = ('.png', '.jpg', '.jpeg', '.pdf')   # images of the project page: not text
 
 
 def files():
     for d, dn, fn in os.walk(ROOT):
         dn[:] = [x for x in dn if x not in SKIP]
         for f in fn:
-            yield os.path.join(d, f)
+            if not f.lower().endswith(BINARY):
+                yield os.path.join(d, f)
 
 
 class Clean(unittest.TestCase):

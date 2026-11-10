@@ -3,6 +3,8 @@ message: "If you use this code, please cite the paper."
 title: "Learning to Act with World Models by Valuing What Comes Next"
 type: software
 license: Apache-2.0
+repository-code: "https://github.com/nuskonghou/wm-ppo"
+url: "https://arxiv.org/abs/2611.12200"
 authors:
   - family-names: Gao
     given-names: Chenghao
@@ -28,5 +30,7 @@ preferred-citation:
       given-names: Yihe
     - family-names: Zhou
       given-names: Doudou
-  journal: "arXiv preprint arXiv:XXXX.XXXXX"
+  journal: "arXiv preprint arXiv:2611.12200"
+  url: "https://arxiv.org/abs/2611.12200"
+  doi: "10.48550/arXiv.2611.12200"
   year: 2026
