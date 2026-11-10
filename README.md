@@ -13,7 +13,7 @@
 
 </div>
 
-> **A sparse terminal reward tells an agent whether it succeeded. The environment's transitions contain information about how each action changed its chances of succeeding.**
+**A sparse terminal reward tells an agent whether it succeeded. The environment's transitions contain information about how each action changed its chances of succeeding.**
 
 WM-PPO learns to use that information. A world model, trained on **real transitions**, predicts what the policy's candidate actions would change. PPO's existing critic, trained primarily on **real returns**, values the predicted successor states according to the current policy's probability of eventual success. Those *transition values* then inform both policy and critic learning, with their reliability calibrated against real branch outcomes.
 
@@ -108,24 +108,21 @@ On procedural ScienceWorld tasks, WM-PPO reaches **46.3%** greedy success compar
 
 ## Why the reliability gate matters
 
-![Figure 5: agreement of preferences with real outcomes](docs/assets/fig5_reliability.png)
+Predicted comparisons are **not equally reliable**. Late in ScienceWorld training, the preferred action has the better real outcome in **84%** of branch pairs with different outcomes in the largest margin bin, while the smaller bins are close to chance. A single gate therefore decides when, and how much, these comparisons shape both networks: the same weight scales the policy's auxiliary advantages and the critic's auxiliary loss, and each margin bin earns its weight from the realized gain of its earlier comparisons.
 
-*Figure 5, from the paper. High-margin preferences agree more often with the real outcomes of different branches; small-margin comparisons are less reliable.*
+![Figure 8: gate weights during training](docs/assets/fig8_gate_weights.png)
 
-![Figure 7: value-channel diagnostic results](docs/assets/fig7_value_channel.png)
+*Figure 8, from the paper. Gate weights of the smallest, middle and largest margin bins during training, for WM-PPO (a) and its policy-channel-only variant (b); means over three runs. Top: ScienceWorld; bottom: ALFWorld.*
 
-*Figure 7, from the paper. On ScienceWorld, the value channel improves late critic fit and helps the reliability of candidate comparisons and procedural outcomes.*
+On ScienceWorld, the gate starts closed and opens as the critic and world model become reliable. The largest bin reaches full weight early and keeps it; the smaller bins, close to chance but with a slightly positive gain, stay at low weights, so their weak signal enters both channels without dominating them. The value channel feeds this calibration: with more reliable comparisons, WM-PPO's largest bin opens earlier and stays open, its critic fits real returns better late in training (explained variance 0.49 against 0.30 with the policy channel only), and it pulls ahead of the policy-channel-only variant from iteration 36 onward. On ALFWorld, the same calibration withdraws feedback as success approaches the ceiling.
+
+<p align="center"><img src="docs/assets/fig9_gate_ablation.png" alt="Figure 9: gate ablation on ScienceWorld" width="720"></p>
+
+*Figure 9, from the paper. Gate ablation on ScienceWorld (first run of each method). Two copies of WM-PPO fix the bin weights from iteration 13 at (1, 1, 1) (no gate) or (0, 0, 1) (largest-margin bin only) in both channels; all other settings are unchanged.*
+
+Fixing the weights shows what this calibration contributes. **Full weight** rises fastest at first, but the near-chance preferences of the smaller bins keep entering at the same weight as the reliable ones, and its success later grows no faster than PPO-160's. **Keeping only the largest bin** is stable but stays below WM-PPO: it never receives the weak signal of the smaller bins, and it trusts the largest bin before its comparisons have proven reliable. Both copies end significantly below WM-PPO, ordered by the reliability of the margin bins.
 
 The predicted valuations are **not** universally correct. The method learns when comparison signals deserve weight, and the value channel can improve the critic that supplies those comparisons. This is why the two channels and their shared calibration are central to the method, not decorative add-ons.
-
-## Scope and limitations
-
-- Evaluation uses **Qwen3-4B-Instruct-2507** adapters, **ALFWorld and ScienceWorld**, and episodes capped at 40 steps.
-- Real-branch calibration assumes reproducible prefixes or resumable environment state; the tested environments are deterministic.
-- A **single greedy one-step prediction** does not capture outcome uncertainty; long-range effects are represented through the critic, and model or value errors may bias auxiliary signals.
-- WM-PPO adds training-time computation (per iteration, **1.3–1.6× the wall-clock time and 2.7–3.8× the GPU-hours of PPO-160**) in exchange for improved learning per real interaction.
-
-We see the paper as evidence for a broader direction: **using the task value implicit in learned environment dynamics for policy improvement**, rather than treating prediction solely as an inference-time simulator or as an auxiliary reconstruction objective.
 
 For the full proof-of-concept diagnostics, the online training algorithm, budget accounting, ablations, and limitations, see [the paper](https://arxiv.org/abs/2611.12200).
 
