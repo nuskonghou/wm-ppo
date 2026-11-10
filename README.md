@@ -194,7 +194,7 @@ few games.
 | `results/` | per-game official evaluations of every reported run, training curves, gate logs, diagnostics, the paper's tables ([results/README.md](results/README.md)) |
 | `analysis/` | table check, figures, Section 2 numbers, scoring of new evaluations |
 | `docs/REPRODUCE.md` | each table and figure: data, command, configs |
-| `docs/index.html`, `docs/assets/` | project page (GitHub Pages) and the paper figures shown in this README |
+| `docs/index.html`, `docs/assets/` | project page and the paper figures shown in this README |
 | `tests/` | CPU tests |
 
 ## Installation
